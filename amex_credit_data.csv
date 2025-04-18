@@ -1,0 +1,5 @@
+CustomerID,CreditLimit,Balance,PaymentDueDate,AccountStatus,Name
+AMEX001,15000,3250,2025-05-05,Active,John Doe
+AMEX002,10000,2500,2025-05-10,Active,Jane Smith
+AMEX003,20000,5000,2025-04-25,Suspended,John Doe
+AMEX004,12000,0,2025-05-15,Closed,Jane Smith
