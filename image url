@@ -2,28 +2,5 @@ data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIH
 data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTkuNjc0IDIuMDc1YS43NS43NSAwIDAgMSAuNjUyIDBsNy4yNSAzLjVBLjc1Ljc1IDAgMCAxIDE3IDYuOTU3VjE2LjVoLjI1YS43NS43NSAwIDAgMSAwIDEuNUgyLjc1YS43NS43NSAwIDAgMSAwLTEuNUgzVjYuOTU3YS43NS43NSAwIDAgMS0uNTc2LTEuMzgyek0xMSA2YTEgMSAwIDEgMS0yIDBhMSAxIDAgMCAxIDIgME03LjUgOS43NWEuNzUuNzUgMCAwIDAtMS41IDB2NS41YS43NS43NSAwIDAgMCAxLjUgMHptMy4yNSAwYS43NS43NSAwIDAgMC0xLjUgMHY1LjVhLjc1Ljc1IDAgMCAwIDEuNSAwem0zLjI1IDBhLjc1Ljc1IDAgMCAwLTEuNSAwdjUuNWEuNzUuNzUgMCAwIDAgMS41IDB6IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48L3N2Zz4=
 https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-29.html
 
-1.In my use case i will be using Four playbooks, i.e one for greeting , second one for kafka knowledgebase,elk knowledgebase, benefits knowledge base
-2. Below figure shows how playbooks are connected to each other (agent overview pic)
-3.Greetings playbook:
-Give a name to playbook
-Give description or goal 
-Give instructions on how to use this playbook
-Playbook image
-4.kafka knowledgebase
-Give a name to playbook
-Give description or goal 
-Give instructions on how to use this playbook
-Playbook image
-5.elk knowledgebase
-Give a name to playbook
-Give description or goal 
-Give instructions on how to use this playbook
-Playbook image
-6.benefits knowledge base
-Give a name to playbook
-Give description or goal 
-Give instructions on how to use this playbook
-Playbook image
-7.after checking all the connecting tools in the instructions of the playbook. Now, we can test the agent.by clicking the testing toggle button as shown below
-8. This is an example output conversation.
+
 
