@@ -3,4 +3,4 @@ data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIH
 https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-29.html
 
 
-
+This feature calculates the 30-day rolling standard deviation of beverage event counts (bev_count) per customer (xa_cust_id). It joins session-level beverage event data (dvu_111_t_bev_evnt) with the extended base sample (base_sample_extended) on session ID (bev_sessn_id and BEV_SESS_ID) to create temp. A window function (cust_winspec) is applied, partitioned by xa_cust_id and ordered by unix_ts, covering a 30-day range. The standard deviation is computed and stored as stddev_bev_count_30day_dvc.
