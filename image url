@@ -4,8 +4,3 @@ https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-29.html
 
 
 
-Feature 12 Summary (Text):
-This feature calculates the age of a device (dvc_id) since its first association with any customer. It reads from two source datasets containing device-customer authentication associations and merges them. For each device, it identifies the earliest timestamp (CREATE_TS) of association and computes its Unix time. A window function partitions by DVC_ID to extract the earliest Unix time (earliest_unix_dvc). This value is then joined with the daily_data table, and the age of the device (in days) is computed as the difference between the current Unix time and the device's first seen time. The final result is written to a Parquet file partitioned by creation date. Temporary columns and intermediate dataframes are dropped after use.
-
-Feature 15 Summary
-This feature flags whether a device (dvc_id) associated with a fraudulent disposition case has been reused within 30 days after the case's disposition. It reads case disposition data, transaction data, and Actimize fraud data, filters for confirmed fraud reports (RPT_IN = 1 and FRAUD_IN = 1), and performs joins on customer ID and transaction amount. Matches are filtered within ±1 day of transaction dates to find valid fraud-device associations. The earliest disposition timestamp (disp_chg_dt_unix) per device is compared with the login timestamp (create_ts) to compute a time_diff. If a device was used more than 30 minutes after and within 30 days of disposition, a binary flag fraud_dvc_disp_ind_30days is set to 1 per logon_id. The final dataset is saved as a Parquet file, with missing values defaulted to 0.
