@@ -4,3 +4,17 @@ https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-29.html
 
 
 
+Feature 1
+This feature calculates the average time difference between consecutive logins (in seconds) for the same device(dvc_id) within the past 30 days. It uses a Spark window function partitioned by device ID and ordered by timestamp (unix). The logic first computes the time difference between current and previous logins, then derives the average of these values over a 30-day range. The result is joined with daily logon data and written to a Parquet file partitioned by creation date. Temporary dataframes and variables are cleaned up, and the execution time is logged.
+
+Feature 2 
+This feature calculates the standard deviation of time differences (in seconds) between consecutive logins for the same customer (xa_cust_id) over the past 30 days. It defines a Spark window partitioned by customer ID and ordered by timestamp (unix). The logic computes the time difference between successive logins, inverts it to ensure positive values, and then calculates the standard deviation over a 30-day window
+
+Feature 11 Summary (Text):
+This feature calculates the number of failed logins for each customer (xa_cust_id) within the past 30 days. A failed login is identified when the authc_prim_rsit_txt field is not equal to 'SUCCESS'. A Spark window is defined to partition by customer ID and order by timestamp (unix) within a 30-day range. The logic adds a binary column indicating login failure, sums these over the 30-day window, and joins the result with the daily logon data. The final data is written to a Parquet file partitioned by creation date, and processing completion is logged.
+
+Feature 9 Summary (Text):
+This feature calculates the number of distinct logins (logon_id) by the same customer (xa_cust_id) over the past 1 day (24 hours). It defines a Spark window partitioned by customer ID and ordered by timestamp (unix) within a 1-day range. The logic uses approx_count_distinct to efficiently estimate the count of distinct login events. The result is joined with daily logon data and written to a Parquet file partitioned by creation date. Temporary dataframes are dropped at the end to conserve memory.
+
+Feature 6 Summary
+This feature calculates the average session length (in seconds) for each customer (xa_cust_id) over the past 30 days. It uses data from the dvu_111_t_bev_sess table, adjusting session start and end timestamps by adding one hour. Each session’s length is computed by subtracting the adjusted start time from the end time. The data is joined with the base sample on session ID, and a Spark window function is used to compute the 30-day average session length per customer. The result is joined with daily logon data and saved to a Parquet file partitioned by creation date. Temporary dataframes are deleted after processing.
