@@ -3,3 +3,13 @@ data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIH
 https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-29.html
 
 
+Feature 13
+This feature calculates the 30-day rolling count of distinct session IP geolocations per customer. It starts by reading session-level fraud data, extracting the earliest session per ID using a window function, and joining this with an extended customer base sample. After filtering for valid latitude and longitude values, it rounds coordinates to group nearby IP locations and concatenates them into a single string. Using a 30-day window partitioned by customer ID, it computes the approximate count of unique geolocation entries per customer. The result is joined with daily logon data and written to partitioned Parquet storage. Intermediate variables are deleted to manage memory efficiently.
+
+Feature 3 
+
+This feature calculates the 30-day rolling count of successful OTP (One-Time Password) authentication events per customer-device pair. It reads OTP event data, flags records where the challenge type is 'OTP' and the status is 'PASS', and selects the most recent such event per session. The data is then joined with the extended base sample, and a 30-day window function is applied to count OTP passes per customer and device. The final result is joined with daily logon data and saved in partitioned Parquet format. Temporary variables are deleted to optimize memory usage.
+
+ Feature 10 
+
+This feature calculates a 30-day rolling count of OTP interdiction events per customer-device pair. It begins by reading OTP authentication data and flags records where the challenge type is 'AA' as interdicted. The latest interdiction event per session is retained using a window function. This data is then joined with the extended base sample. A 30-day window is applied to identify if an interdiction occurred (max of the flag) and count such occurrences per customer-device. The final output is joined with daily logon data and written to partitioned Parquet storage. Temporary data is deleted to optimize memory usage.
