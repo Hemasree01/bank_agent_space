@@ -3,4 +3,3 @@ data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIH
 https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-29.html
 
 
-This feature calculates the geographic distance between a customer's registered address and their session login location. It joins customer address data with ZIP code geolocation data and links this to session-level login records. The logic filters for valid U.S. addresses and non-null coordinates, deduplicates records, and ensures only the earliest session per ID is used by applying a window function. Coordinates are cast to numeric types, and the Haversine formula is applied to compute distances between session and address points. The final dataset is cleaned, formatted, and written to Parquet storage, with intermediate variables cleared to optimize memory usage.
