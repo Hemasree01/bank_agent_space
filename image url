@@ -3,4 +3,3 @@ data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIH
 https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-29.html
 
 
-This feature calculates the 30-day geographic distance between the session IP location and the top two customer device locations. It begins by calling a function to generate GPS-based distance metrics, then splits and casts coordinate columns to numeric types for accurate computation. Using the Haversine formula (delta function), it calculates distances between session origin coordinates and each of the top two device locations over a 30-day window. The resulting distances are selected along with the logon ID, joined with daily data, and written to partitioned Parquet storage. Temporary variables are deleted at the end to manage memory usage.
