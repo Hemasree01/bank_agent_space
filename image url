@@ -3,35 +3,3 @@ data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIH
 https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-29.html
 
 
-from elasticsearch import Elasticsearch
-
-# Connect to Elasticsearch
-
-
-# Define index name
-index_name = ""
-
-# Query to fetch documents (adjust size as needed)
-query = {
-    "size": 1000,  # Increase if needed or use scroll for large data
-    "query": {
-        "match_all": {}
-    }
-}
-
-# Execute search
-response = es.search(index=index_name, body=query)
-
-# Extract distinct timestamps from either 'timestamp' or 'event_timestamp'
-distinct_timestamps = set()
-
-for hit in response["hits"]["hits"]:
-    source = hit["_source"]
-    ts = source.get("timestamp") or source.get("event_timestamp")
-    if ts:
-        distinct_timestamps.add(ts)
-
-# Print sorted distinct timestamps
-print("All Distinct Timestamps:")
-for ts in sorted(distinct_timestamps):
-    print(ts)
