@@ -3,3 +3,57 @@ data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIH
 https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-29.html
 
 
+from elasticsearch import Elasticsearch
+
+# Connect to Elasticsearch
+es = Elasticsearch("http://localhost:9200")
+
+# Index and base query
+index_name = 
+batch_size = 1000
+scroll_time = "2m"
+
+# Initial query with scroll
+query_body = {
+    "size": batch_size,
+    "query": {
+        "match_all": {}
+    }
+}
+
+# Start scrolling
+response = es.search(
+    index=index_name,
+    body=query_body,
+    scroll=scroll_time
+)
+
+scroll_id = response['_scroll_id']
+all_hits = response['hits']['hits']
+
+# Scroll until no more results
+while True:
+    response = es.scroll(scroll_id=scroll_id, scroll=scroll_time)
+    hits = response['hits']['hits']
+    if not hits:
+        break
+    all_hits.extend(hits)
+    scroll_id = response['_scroll_id']
+
+print(f"Total records fetched: {len(all_hits)}")
+
+# Extract distinct dates
+distinct_dates = set()
+for hit in all_hits:
+    source = hit["_source"]
+    ts = source.get("@timestamp") or source.get("event_timestamp")
+    if ts:
+        date_only = ts.split("T")[0]
+        distinct_dates.add(date_only)
+
+# Print distinct dates
+print("\nAll Distinct Dates:")
+for date in sorted(distinct_dates):
+    print(date)
+
+print(f"\nTotal distinct dates: {len(distinct_dates)}")
