@@ -3,3 +3,93 @@ data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIH
 https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-29.html
 
 
+from elasticsearch import Elasticsearch
+from datetime import datetime, timedelta
+import dateutil.parser
+
+def get_min_login_diff_and_dates(ecn_input):
+    # --- Connect to Elasticsearch ---
+    es = Elasticsearch("http://localhost:9200")  # Update if needed
+    index_name = "tachyon-dt-fas-login-events-riskeval-geoip-qa"
+    batch_size = 1000
+    scroll_time = "2m"
+
+    # --- Time range: last 30 days ---
+    now = datetime.utcnow()
+    thirty_days_ago = now - timedelta(days=30)
+    thirty_days_ago_iso = thirty_days_ago.isoformat() + "Z"
+
+    # --- Query: match ECN + timestamp range ---
+    query_body = {
+        "size": batch_size,
+        "query": {
+            "bool": {
+                "must": [
+                    {"match": {"context.customer.ecn.keyword": ecn_input}},
+                    {"range": {"@timestamp": {"gte": thirty_days_ago_iso}}}
+                ]
+            }
+        },
+        "sort": [{"@timestamp": {"order": "asc"}}]
+    }
+
+    # --- Start Scroll ---
+    response = es.search(index=index_name, body=query_body, scroll=scroll_time)
+    scroll_id = response.get('_scroll_id')
+    all_hits = response['hits']['hits']
+
+    # --- Continue Scrolling ---
+    while True:
+        response = es.scroll(scroll_id=scroll_id, scroll=scroll_time)
+        hits = response['hits']['hits']
+        if not hits:
+            break
+        all_hits.extend(hits)
+        scroll_id = response['_scroll_id']
+
+    es.clear_scroll(scroll_id=scroll_id)
+
+    print(f"\nTotal login records checked: {len(all_hits)}")
+
+    # --- Extract timestamps & distinct dates ---
+    timestamps = []
+    distinct_dates = set()
+
+    for hit in all_hits:
+        source = hit.get("_source", {})
+        ts = source.get("@timestamp")
+        if ts:
+            try:
+                dt = dateutil.parser.isoparse(ts)
+                timestamps.append(dt)
+                distinct_dates.add(ts.split("T")[0])
+            except Exception as e:
+                print(f" Error parsing timestamp: {ts} | Error: {e}")
+
+    # --- Print distinct login dates ---
+    print("\nAll Distinct Login Dates:")
+    for date in sorted(distinct_dates):
+        print(date)
+    print(f"\nTotal distinct login dates: {len(distinct_dates)}")
+
+    # --- Calculate minimum login time difference ---
+    if len(timestamps) < 2:
+        return None
+
+    timestamps.sort()
+    diffs = [
+        (timestamps[i + 1] - timestamps[i]).total_seconds()
+        for i in range(len(timestamps) - 1)
+    ]
+
+    return min(diffs)
+
+# --- Example usage ---
+if __name__ == "__main__":
+    ecn = input("Enter ECN: ").strip()
+    min_diff = get_min_login_diff_and_dates(ecn)
+
+    if min_diff is not None:
+        print(f"\n Minimum time between logins in last 30 days: {min_diff:.2f} seconds")
+    else:
+        print("\n Not enough login data to compute time difference.")
