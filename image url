@@ -3,3 +3,19 @@ data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIH
 https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-29.html
 
 
+Define the Window and Calculate the Feature
+
+# Define 7-day rolling window (7 days * 86400 seconds)
+cust_winspec = Window.partitionBy('xa_cust_id').orderBy('unix').rangeBetween(-7*86400, 0)
+
+# Add approx distinct count per customer over 7 days
+temp = base_sample_extended.withColumn(
+    'cnt_devs_same_cust_7day',
+    approx_count_distinct("dve_id", rsd=0.01).over(cust_winspec)
+)
+
+
+ Write or Display Results
+To just inspect the feature:
+
+count_devs_same_cust_7days.select("logon_id", "cnt_devs_same_cust_7day").show(20)
