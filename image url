@@ -3,3 +3,44 @@ data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIH
 https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-29.html
 
 
+from elasticsearch import Elasticsearch
+
+# Index and time range
+index_name = "your-index-name"
+start_time = "2025-06-13T00:00:00Z"
+end_time = "2025-06-14T00:00:00Z"
+
+# Aggregation query
+query = {
+    "size": 0,  # don't return actual docs
+    "query": {
+        "range": {
+            "@timestamp": {
+                "gte": start_time,
+                "lt": end_time
+            }
+        }
+    },
+    "aggs": {
+        "unique_device_ids": {
+            "terms": {
+                "field": "context.device.id.keyword",  # Use `.keyword` for exact match
+                "size": 10000  # Increase if many unique device IDs
+            }
+        }
+    }
+}
+
+# Execute search
+response = es.search(index=index_name, body=query)
+
+# Parse result
+buckets = response["aggregations"]["unique_device_ids"]["buckets"]
+device_ids = [bucket["key"] for bucket in buckets]
+
+# Output
+print(f"\nDevice IDs on 2025-06-13:")
+for device_id in sorted(device_ids):
+    print(device_id)
+
+print(f"\n Total unique device IDs: {len(device_ids)}")
