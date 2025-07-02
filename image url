@@ -3,3 +3,57 @@ data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIH
 https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-29.html
 
 
+from elasticsearch import Elasticsearch
+from datetime import datetime, timedelta
+import dateutil.parser
+
+def count_failed_logins_last_30_days():
+    # Connect to Elasticsearch
+    es = Elasticsearch("http://localhost:9200")  # Update if needed
+
+    # Time range: last 30 days
+    now = datetime.utcnow()
+    thirty_days_ago = (now - timedelta(days=30)).isoformat() + "Z"
+
+    # Query: Get all login risk events from the last 30 days
+    query = {
+        "size": 1000,
+        "query": {
+            "range": {
+                "event_timestamp": {
+                    "gte": thirty_days_ago
+                }
+            }
+        }
+    }
+
+    # Run query
+    res = es.search(index="fas.loginRiskEvaluationEvents.geolPPending", body=query)
+
+    # Initialize counters
+    failed_logins = 0
+    successful_logins = 0
+
+    for hit in res["hits"]["hits"]:
+        doc = hit["_source"]
+        details = doc.get("event_details", {})
+        auth_result = details.get("primary_authentication_result", "").upper()
+        recommended_action = details.get("recommended_action", "").upper()
+
+        # 1. Successful login: SUCCESS result or ALLOW* action
+        if auth_result == "SUCCESS":
+            successful_logins += 1
+        elif auth_result != "SUCCESS" and recommended_action.startswith("ALLOW"):
+            successful_logins += 1
+
+        # 2. Failed login: not SUCCESS + BLOCK action
+        elif auth_result != "SUCCESS" and recommended_action == "BLOCK":
+            failed_logins += 1
+
+    return failed_logins, successful_logins
+
+# Example usage
+failed, successful = count_failed_logins_last_30_days()
+
+print(f"Failed logins in the last 30 days: {failed}")
+print(f"Successful logins in the last 30 days: {successful}")
